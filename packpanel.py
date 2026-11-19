@@ -31,7 +31,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 APP_NAME = "Pack Panel"
-VERSION = "1.6.0"
+VERSION = "1.6.1"
 HERE = Path(__file__).resolve().parent
 UI_DIR = HERE / "ui"
 

@@ -36,7 +36,7 @@ A docked asset-pack panel for [PhotoCraft](https://getartcraft.com) on macOS. Po
 
 ## Install
 
-1. Download **Pack-Panel-1.6.0-macOS.zip** from [Releases](../../releases) and unzip it.
+1. Download **Pack-Panel-1.6.1-macOS.zip** from [Releases](../../releases) and unzip it.
 2. Move **Pack Panel.app** to Applications.
 3. The first time, right-click it, then choose **Open**, then **Open**. The app is not notarized by Apple, so macOS asks once.
 4. In the panel, click **Choose folder…** and pick your packs folder.

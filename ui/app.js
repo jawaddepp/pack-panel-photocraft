@@ -422,7 +422,7 @@ function cloudRow(it) {
   else if (!it.ready) action = el("span", { class: "card-state", text: "Preparing" });
   else action = el("button", { class: "btn btn-small btn-primary", type: "button", onclick: () => shopDownload([it.id]) },
     icon("cloud"), it.status === "failed" ? "Retry" : "Download");
-  const meta = [it.files ? `${it.files} files` : "", formatBytes(it.bytes), "not downloaded"].filter(Boolean).join(", ");
+  const meta = [it.files ? `${it.files} ${it.files === 1 ? "file" : "files"}` : "", formatBytes(it.bytes)].filter(Boolean).join(", ");
   const row = el("div", { class: `row is-cloud${it.status === "downloading" ? " is-loading" : ""}`, title: it.error || "" },
     rowCover(it.id, null),
     el("span", { class: "row-text" }, el("span", { class: "row-name", text: it.name }), el("span", { class: "row-meta", text: meta })),
@@ -446,7 +446,7 @@ function cloudCard(it) {
   else if (!it.ready) action = el("span", { class: "card-state", text: "Being prepared" });
   else action = el("button", { class: "btn btn-small btn-block", type: "button", onclick: () => shopDownload([it.id]) },
     icon("cloud"), it.status === "failed" ? "Retry download" : "Download");
-  const meta = [it.files ? `${it.files} files` : "", formatBytes(it.bytes)].filter(Boolean).join(", ");
+  const meta = [it.files ? `${it.files} ${it.files === 1 ? "file" : "files"}` : "", formatBytes(it.bytes)].filter(Boolean).join(", ");
   const card = el("div", { class: `card is-cloud${it.status === "downloading" ? " is-loading" : ""}`, title: it.error || "" },
     el("span", { class: "card-media" }, cardImage(it.id, null), it.isNew ? el("span", { class: "card-badge", text: "New" }) : null),
     el("span", { class: "card-body" },
@@ -467,9 +467,10 @@ function pendingItems(kinds) {
   return shopItems(kinds).filter((i) => i.status !== "installed" && i.status !== "update");
 }
 
-function downloadAllBar(kinds) {
-  const pending = pendingItems(kinds).filter((i) => i.ready && (i.status === "missing" || i.status === "failed"));
-  const updates = shopItems(kinds).filter((i) => i.status === "update");
+function downloadAllBar() {
+  const all = ["pack", "brushes", "style", "template"];
+  const pending = pendingItems(all).filter((i) => i.ready && (i.status === "missing" || i.status === "failed"));
+  const updates = (store.shop?.signedIn ? shopItems(all) : []).filter((i) => i.status === "update");
   if (!pending.length && !updates.length) return null;
   const n = pending.length + updates.length;
   return el("div", { class: "notice" },
@@ -479,7 +480,7 @@ function downloadAllBar(kinds) {
 }
 
 function renderPacks(packs) {
-  const prompt = signInPrompt() || downloadAllBar(["pack", "brushes", "style"]);
+  const prompt = signInPrompt() || downloadAllBar();
   if (prompt) ui.main.append(prompt);
   const openId = store.openPack;
   const list = el("ul", { class: "rows", "aria-label": "Packs" });
@@ -570,7 +571,7 @@ function renderTemplates(templates) {
   const ws = words();
   const shown = templates.filter((a) => matches(a, ws) || ws.every((w) => (shopItem(a.storeId)?.name || "").toLowerCase().includes(w)));
   const pending = pendingItems(["template"]);
-  const bar = downloadAllBar(["template"]);
+  const bar = downloadAllBar();
   if (bar) ui.main.append(bar);
   if (!templates.length && !pending.length) {
     ui.main.append(el("p", { class: "section-note", text: "No PSD or PSB files in your packs folder yet." }));
@@ -1111,7 +1112,7 @@ function renderStoreDialog() {
       it.hasCover ? el("img", { class: "store-row-cover", src: coverUrl(it.id), alt: "", loading: "lazy" }) : el("span", { class: "store-row-cover" }),
       el("span", { class: "store-row-text" },
         el("span", { class: "store-row-name", text: it.name }),
-        el("span", { class: "store-row-meta", text: [kindLabel, it.files ? `${it.files} files` : "", formatBytes(it.bytes)].filter(Boolean).join(", ") }),
+        el("span", { class: "store-row-meta", text: [kindLabel, it.files ? `${it.files} ${it.files === 1 ? "file" : "files"}` : "", formatBytes(it.bytes)].filter(Boolean).join(", ") }),
         it.error ? el("span", { class: "store-row-error", text: it.error }) : null),
       el("span", { class: `chip is-${it.status}`, text: pct !== null ? `${pct}%` : label }),
       btn);
