@@ -31,7 +31,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 APP_NAME = "Pack Panel"
-VERSION = "1.5.0"
+VERSION = "1.6.0"
 HERE = Path(__file__).resolve().parent
 UI_DIR = HERE / "ui"
 
@@ -69,11 +69,27 @@ DEFAULT_CONFIG = {
     "imported": {},
     "inspoUrl": "",
     "storeUrl": "",
+    "storeUrlCleared": False,   # True only when the person deliberately emptied the field
+    "inspoUrlCleared": False,
     "autoUpdate": True,
     "autoActivate": True,
     "store": {},
 }
 _config_lock = threading.RLock()
+
+
+# Out-of-the-box addresses, so a fresh install can sign in and show Inspo without setup.
+DEFAULT_STORE_URL = os.environ.get("PACK_PANEL_DEFAULT_STORE", "https://sesohq-downloads.vercel.app")
+DEFAULT_INSPO_URL = os.environ.get("PACK_PANEL_DEFAULT_INSPO", "https://sesohq.com/pages/learn")
+DEFAULT_PACKS_DIR = Path.home() / "Pictures" / "Everything Pack"
+
+
+def apply_defaults(cfg: dict) -> dict:
+    if not cfg.get("storeUrl") and not cfg.get("storeUrlCleared"):
+        cfg["storeUrl"] = DEFAULT_STORE_URL
+    if not cfg.get("inspoUrl") and not cfg.get("inspoUrlCleared"):
+        cfg["inspoUrl"] = DEFAULT_INSPO_URL
+    return cfg
 
 
 def load_config() -> dict:
@@ -96,7 +112,7 @@ def save_config(cfg: dict) -> None:
     os.replace(tmp, CONFIG_FILE)
 
 
-CONFIG = load_config()
+CONFIG = apply_defaults(load_config())
 
 
 def update_config(**changes) -> dict:
@@ -1072,6 +1088,16 @@ def item_status(it: dict) -> str:
     return "missing"
 
 
+def ensure_packs_folder() -> Path:
+    """Fresh install with no folder chosen yet: use ~/Pictures/Everything Pack."""
+    root = assets_root()
+    if root is not None:
+        return root
+    DEFAULT_PACKS_DIR.mkdir(parents=True, exist_ok=True)
+    update_config(assetsRoot=str(DEFAULT_PACKS_DIR.resolve()))
+    return DEFAULT_PACKS_DIR
+
+
 def store_check(auto: bool = True) -> list[dict]:
     data = store_call("/api/packs")
     items = normalize_listing(data)
@@ -1125,9 +1151,7 @@ def _filename_from_url(url: str, fallback: str) -> str:
 
 
 def store_download_one(it: dict) -> None:
-    root = assets_root()
-    if root is None:
-        raise StoreError("Choose your packs folder first.")
+    root = ensure_packs_folder()
     link = store_call("/api/packs/download", {"id": it["id"]})["url"]
     if not str(link).startswith("https://"):
         raise StoreError("The store sent an unexpected download link.")
@@ -1501,6 +1525,8 @@ class Handler(BaseHTTPRequestHandler):
             changes = {}
             if "fitOnPlace" in body:
                 changes["fitOnPlace"] = bool(body["fitOnPlace"])
+            if body.get("useDefaultFolder"):
+                ensure_packs_folder()
             if "assetsRoot" in body:
                 root = Path(str(body["assetsRoot"])).expanduser()
                 if not root.is_dir():
@@ -1511,11 +1537,13 @@ class Handler(BaseHTTPRequestHandler):
                 if url and not re.match(r"^https://[^\s]+$", url):
                     raise PanelError("The Inspo page must be an https:// address.")
                 changes["inspoUrl"] = url
+                changes["inspoUrlCleared"] = not url
             if "storeUrl" in body:
                 url = str(body["storeUrl"]).strip().rstrip("/")
                 if url and not re.match(r"^https://[^\s/]+(/[^\s]*)?$", url):
                     raise PanelError("The store address must be an https:// address.")
                 changes["storeUrl"] = url
+                changes["storeUrlCleared"] = not url
                 if url != (CONFIG.get("storeUrl") or ""):
                     STORE_RUNTIME["listing"] = None
             update_config(**changes)
@@ -1572,6 +1600,7 @@ class Handler(BaseHTTPRequestHandler):
                 raise PanelError("The store didn't sign you in. Try again.")
             store_save_session(res["token"], res.get("email") or email)
             store_save(email=res.get("email") or email)
+            ensure_packs_folder()
             try:
                 store_check(auto=True)
             except PanelError:

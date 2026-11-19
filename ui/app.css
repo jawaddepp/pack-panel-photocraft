@@ -602,3 +602,60 @@ main::-webkit-scrollbar-track { background: transparent; }
 /* centred content: match the scrollbar's width on the left */
 main { padding-left: calc(12px + var(--sbw, 0px)); }
 main.is-inspo { padding-left: 0; }
+
+/* ---------- v1.6: first run + fits any panel size ---------- */
+.empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.welcome { margin: 8px 0; padding: 20px 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.welcome h2 { margin: 0 0 12px; font: 700 26px/1.1 var(--display); }
+.welcome-steps { margin: 0 0 16px; padding-left: 20px; display: grid; gap: 8px; color: var(--muted); }
+.welcome-steps strong { color: var(--text); font-weight: 600; }
+.welcome .empty-actions { justify-content: flex-start; }
+.welcome-note { margin: 12px 0 0; color: var(--muted); font-size: 12px; }
+
+/* dialogs never taller than the panel */
+.sheet-inner { max-height: calc(100vh - 32px); overflow-y: auto; }
+.sheet { max-height: calc(100vh - 16px); }
+
+/* header never overflows: the name gives way first */
+.bar-row { min-width: 0; }
+.brand { min-width: 0; flex-shrink: 1; }
+.brand-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* compact panel: small laptop screens or a narrow dock */
+@media (max-width: 400px), (max-height: 760px) {
+  .bar { padding: 6px 10px 0; }
+  .bar-row { min-height: 32px; }
+  .brand-name { font-size: 17px; }
+  .icon-btn { width: 32px; height: 32px; }
+  .tab { min-height: 32px; font-size: 12px; }
+  .search { height: 32px; margin: 6px 0 8px; }
+  main { padding: 10px; padding-left: calc(10px + var(--sbw, 0px)); }
+  .rows { gap: 6px; }
+  .row { min-height: 64px; gap: 10px; padding: 6px 8px 6px 6px; border-radius: 10px; }
+  .row-cover { width: 52px; height: 52px; border-radius: 6px; }
+  .row-name { font-size: 16px; }
+  .row-meta { font-size: 12px; }
+  .row-chevron { width: 26px; height: 26px; }
+  .rows .group-content { padding: 8px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+  .tile-name { font-size: 12px; margin-top: 3px; }
+  .cards { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; }
+  .card-body { padding: 7px 9px 9px; }
+  .skeleton-row { min-height: 64px; }
+  .sk-cover { width: 52px; height: 52px; }
+  .notice { padding: 8px 10px; margin-bottom: 8px; }
+  .toast { left: 8px; right: 8px; bottom: 8px; padding: 8px 10px; }
+  body.has-toast main { padding-bottom: 92px; }
+  .welcome { padding: 16px 14px; }
+  .welcome h2 { font-size: 22px; }
+}
+/* very narrow: keep the brand mark, drop the word */
+@media (max-width: 330px) {
+  .brand-name { display: none; }
+  .tile-tool { width: 28px; height: 28px; }
+}
+/* roomy panel: bigger tiles */
+@media (min-width: 620px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .cards { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+}

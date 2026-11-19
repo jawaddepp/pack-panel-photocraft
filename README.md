@@ -36,7 +36,7 @@ A docked asset-pack panel for [PhotoCraft](https://getartcraft.com) on macOS. Po
 
 ## Install
 
-1. Download **Pack-Panel-1.5.0-macOS.zip** from [Releases](../../releases) and unzip it.
+1. Download **Pack-Panel-1.6.0-macOS.zip** from [Releases](../../releases) and unzip it.
 2. Move **Pack Panel.app** to Applications.
 3. The first time, right-click it, then choose **Open**, then **Open**. The app is not notarized by Apple, so macOS asks once.
 4. In the panel, click **Choose folder…** and pick your packs folder.
@@ -49,7 +49,7 @@ A docked asset-pack panel for [PhotoCraft](https://getartcraft.com) on macOS. Po
 
 ## Store downloads
 
-Open **Settings › Store download address** and enter your shop's download portal, then use **Account & downloads** from the Pack Panel menu.
+On a fresh install, the welcome screen offers **Sign in and download**: sign in with your email code or order number, then click **Download all**. Packs go to `~/Pictures/Everything Pack` unless you choose another folder. The store address is set by default and can be changed in **Settings › Store download address**.
 
 The client speaks the API used by the Everything Pack download portal: `/api/auth/start`, `/api/auth/verify`, `/api/auth/order`, `/api/packs` and `/api/packs/download`. It only downloads what your own account owns, one file at a time. Your sign-in is stored in `~/Library/Application Support/Pack Panel/store-session.json`, readable only by your user account.
 

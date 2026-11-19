@@ -285,19 +285,22 @@ function render() {
     return;
   }
   const lib = store.library;
+  const sum = store.state?.store || {};
   if (!store.state.config.assetsRoot || lib.rootMissing) {
-    main.append(emptyState(
-      lib.rootMissing ? "Packs folder not found" : "Choose your packs folder",
-      lib.rootMissing
-        ? `${store.state.config.assetsRoot} was moved or renamed. Choose where it lives now.`
-        : "Choose the folder that holds your asset packs. Each subfolder becomes a pack you can browse here.",
-      "Choose folder…", chooseFolder));
+    main.append(lib.rootMissing
+      ? emptyState("Packs folder not found", `${store.state.config.assetsRoot} was moved or renamed. Choose where it lives now.`,
+          "Choose folder…", chooseFolder)
+      : welcomeScreen(sum));
     return;
   }
-  if (!lib.packs.length) {
-    main.append(emptyState("No assets in this folder",
-      `Pack Panel looks for images, PSDs, brushes, patterns, styles and actions inside ${lib.root}.`,
-      "Change folder…", chooseFolder));
+  if (!lib.packs.length && !(sum.signedIn && store.tab !== "inspo")) {
+    main.append(sum.configured
+      ? emptyState("Your packs folder is empty",
+          "Sign in to your store account to download your packs here, or choose another folder that already has them.",
+          "Sign in and download", openStore, "Choose another folder…", chooseFolder)
+      : emptyState("No assets in this folder",
+          `Pack Panel looks for images, PSDs, brushes, patterns, styles and actions inside ${lib.root}.`,
+          "Change folder…", chooseFolder));
     return;
   }
 
@@ -315,11 +318,32 @@ function clearSearch() {
   ui.search.focus();
 }
 
-function emptyState(title, body, cta, onclick) {
+function emptyState(title, body, cta, onclick, cta2, onclick2) {
   return el("div", { class: "empty" },
     el("h2", { text: title }),
     el("p", { text: body }),
-    cta ? el("button", { class: "btn btn-primary", type: "button", onclick }, cta) : null);
+    el("div", { class: "empty-actions" },
+      cta ? el("button", { class: "btn btn-primary", type: "button", onclick }, cta) : null,
+      cta2 ? el("button", { class: "btn", type: "button", onclick: onclick2 }, cta2) : null));
+}
+
+/** First launch on a Mac: download the packs from the store, or point at a folder that has them. */
+function welcomeScreen(sum) {
+  const steps = el("ol", { class: "welcome-steps" },
+    el("li", {}, el("strong", { text: "Get your packs. " }),
+      sum.configured ? "Sign in to download them from your store account, or choose a folder that already has them."
+        : "Choose the folder that holds them."),
+    el("li", {}, el("strong", { text: "Connect PhotoCraft. " }), "Pack Panel opens it with a private local link."),
+    el("li", {}, el("strong", { text: "Click any texture " }), "and it lands in your document."));
+  return el("section", { class: "welcome" },
+    el("h2", { text: "Welcome to Pack Panel" }),
+    steps,
+    el("div", { class: "empty-actions" },
+      sum.configured ? el("button", { class: "btn btn-primary", type: "button", onclick: openStore },
+        sum.signedIn ? "Download your packs" : "Sign in and download") : null,
+      el("button", { class: sum.configured ? "btn" : "btn btn-primary", type: "button", onclick: chooseFolder },
+        "I have the packs: choose folder…")),
+    el("p", { class: "welcome-note", text: "Downloads go to Pictures › Everything Pack. You can change this later in Settings." }));
 }
 
 const coverUrl = (storeId) => `/cover?id=${encodeURIComponent(storeId)}&t=${encodeURIComponent(TOKEN)}`;
@@ -1125,7 +1149,7 @@ $("signin-code").addEventListener("submit", async (e) => {
   const btn = $("verify-code"); btn.disabled = true;
   const res = await storePost("verify", { email: store.signinEmail, code: $("store-code").value }, "code-error");
   btn.disabled = false;
-  if (res) { signinStep = "email"; toast("Signed in to your store account"); renderStoreDialog(); rerender(); }
+  if (res) { signinStep = "email"; toast("Signed in to your store account"); renderStoreDialog(); await refreshState(); await loadLibrary(); }
 });
 $("store-code").addEventListener("input", () => {
   const v = $("store-code").value.replace(/\D/g, "").slice(0, 6);
@@ -1137,7 +1161,7 @@ $("signin-order").addEventListener("submit", async (e) => {
   const email = $("order-email").value.trim();
   store.signinEmail = email;
   const res = await storePost("order", { email, orderNumber: $("order-number").value }, "order-error");
-  if (res) { signinStep = "email"; toast("Signed in to your store account"); renderStoreDialog(); rerender(); }
+  if (res) { signinStep = "email"; toast("Signed in to your store account"); renderStoreDialog(); await refreshState(); await loadLibrary(); }
 });
 $("resend-code").addEventListener("click", async () => {
   const res = await storePost("start", { email: store.signinEmail }, "code-error");

@@ -293,7 +293,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
         panel.level = .floating
         panel.hidesOnDeactivate = false
         panel.becomesKeyOnlyIfNeeded = false
-        panel.minSize = NSSize(width: 300, height: 420)
+        panel.minSize = NSSize(width: 280, height: 360)
+        panel.setContentSize(NSSize(width: preferredWidth(on: NSScreen.main), height: min(860, (NSScreen.main?.visibleFrame.height ?? 900) - 60)))
         panel.collectionBehavior = [.fullScreenAuxiliary, .moveToActiveSpace]
         panel.delegate = self
         panel.setFrameAutosaveName("PackPanelWindow")
@@ -369,10 +370,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
         set { UserDefaults.standard.set(Double(newValue), forKey: "dockInset") }
     }
 
+    /// A width that suits the screen: about a quarter of it, between 300 and 440 pt,
+    /// unless the person has resized the panel themselves (remembered per screen width).
+    func preferredWidth(on screen: NSScreen?) -> CGFloat {
+        let sw = screen?.visibleFrame.width ?? 1440
+        if let saved = UserDefaults.standard.object(forKey: "panelWidth-\(Int(sw))") as? Double { return CGFloat(saved) }
+        return max(300, min(440, (sw * 0.24).rounded()))
+    }
+
+    func windowDidEndLiveResize(_ notification: Notification) {
+        let sw = (panel.screen ?? NSScreen.main)?.visibleFrame.width ?? 1440
+        UserDefaults.standard.set(Double(panel.frame.width), forKey: "panelWidth-\(Int(sw))")
+        follow()
+    }
+
     func dockFrame(for pc: NSRect) -> NSRect {
         let screen = NSScreen.screens.first { $0.frame.intersects(pc) } ?? NSScreen.main!
         let visible = screen.visibleFrame
-        let width = panel.frame.width
+        let width = min(preferredWidth(on: screen), max(280, pc.width * 0.45))
         if pc.maxX + width <= visible.maxX {             // room beside PhotoCraft: attach outside
             let top = min(pc.maxY, visible.maxY), bottom = max(pc.minY, visible.minY)
             return NSRect(x: pc.maxX, y: bottom, width: width, height: top - bottom).integral
@@ -384,7 +399,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKSc
     }
 
     func follow() {
-        guard docked, !collapsed, panel.isVisible, NSEvent.pressedMouseButtons == 0, let pc = photoCraftFrame() else { return }
+        guard docked, !collapsed, panel.isVisible, !panel.inLiveResize, NSEvent.pressedMouseButtons == 0,
+              let pc = photoCraftFrame() else { return }
         let target = dockFrame(for: pc)
         if target != panel.frame {
             movingProgrammatically = true
