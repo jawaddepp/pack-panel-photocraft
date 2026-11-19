@@ -1,0 +1,8 @@
+# build output
+Pack Panel.app/
+*.zip
+dist/
+# macOS / Python
+.DS_Store
+__pycache__/
+*.pyc

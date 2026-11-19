@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="panel-token" content="__PANEL_TOKEN__">
+  <meta name="color-scheme" content="dark light">
+  <title>Pack Panel</title>
+  <link rel="icon" href="/ui/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/ui/app.css">
+  <script src="/ui/app.js" defer></script>
+</head>
+<body>
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-gear" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></symbol>
+    <symbol id="i-recent" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4"/><path d="M3 4v4.5h4.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v8.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5v-11Z"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4.5 4.5 0 0 1-.5 8.97"/><path d="M12 12v8"/><path d="m8.5 16.5 3.5 3.5 3.5-3.5"/></symbol>
+    <symbol id="i-collapse" viewBox="0 0 24 24"><path d="M14 10 21 3"/><path d="M14 4.5V10h5.5"/><path d="M10 14 3 21"/><path d="M4.5 14H10v5.5"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M19 14v4.5A1.5 1.5 0 0 1 17.5 20h-12A1.5 1.5 0 0 1 4 18.5v-12A1.5 1.5 0 0 1 5.5 5H10"/></symbol>
+  </svg>
+
+  <header class="bar">
+    <div class="bar-row">
+      <button class="brand" id="brand" type="button" aria-haspopup="menu" aria-expanded="false" title="Pack Panel menu">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Pack Panel</span>
+        <span class="link-dot" id="link-dot" aria-hidden="true"></span>
+        <span class="store-dot" id="store-dot" aria-hidden="true" hidden></span>
+        <svg class="brand-caret" aria-hidden="true"><use href="#i-down"/></svg>
+        <span class="sr-only" id="link-sr"></span>
+      </button>
+      <span class="bar-spacer"></span>
+      <button class="icon-btn" id="fav-filter" type="button" aria-pressed="false" aria-label="Show favorites only" title="Show favorites only">
+        <svg><use href="#i-star"/></svg>
+      </button>
+      <button class="icon-btn" id="recent-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Recent assets" title="Recent assets">
+        <svg><use href="#i-recent"/></svg>
+      </button>
+      <button class="icon-btn" id="open-settings" type="button" aria-label="Settings" title="Settings">
+        <svg><use href="#i-gear"/></svg>
+      </button>
+      <button class="icon-btn native-only" id="collapse-btn" type="button" aria-label="Hide to floating icon" title="Hide to floating icon (⌘J)">
+        <svg><use href="#i-collapse"/></svg>
+      </button>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Library">
+      <button role="tab" type="button" class="tab" data-tab="packs" aria-selected="true">Packs</button>
+      <button role="tab" type="button" class="tab" data-tab="templates" aria-selected="false">Templates</button>
+      <button role="tab" type="button" class="tab" data-tab="inspo" aria-selected="false">Inspo</button>
+    </nav>
+    <label class="search" id="search-wrap">
+      <svg aria-hidden="true"><use href="#i-search"/></svg>
+      <span class="sr-only">Search assets</span>
+      <input id="search" type="search" placeholder="Search" autocomplete="off" spellcheck="false">
+      <kbd aria-hidden="true">/</kbd>
+    </label>
+  </header>
+
+  <div class="progress-bar" id="dl-bar" role="status" aria-live="polite" hidden>
+    <span class="progress-text" id="dl-text"></span>
+    <span class="progress-track" aria-hidden="true"><span class="progress-fill" id="dl-fill"></span></span>
+  </div>
+
+  <div class="link-bar" id="link-bar" role="status" aria-live="polite" hidden>
+    <span id="link-text"></span>
+    <button class="btn btn-small btn-primary" id="link-action" type="button"></button>
+  </div>
+
+  <main id="main" tabindex="-1"></main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden>
+    <span class="toast-spin" aria-hidden="true"></span>
+    <span class="toast-body"><span id="toast-text"></span><span class="toast-where" id="toast-where" hidden></span></span>
+    <span class="toast-actions" id="toast-actions"></span>
+  </div>
+
+  <div class="menu" id="menu" role="menu" hidden></div>
+
+  <section class="popover" id="recent-pop" role="dialog" aria-labelledby="recent-title" hidden>
+    <h2 id="recent-title">Recent assets</h2>
+    <ul class="recent-list" id="recent-list"></ul>
+  </section>
+
+  <dialog class="sheet confirm" id="confirm" aria-labelledby="confirm-title" aria-describedby="confirm-body">
+    <form method="dialog" class="sheet-inner">
+      <h2 id="confirm-title"></h2>
+      <p id="confirm-body"></p>
+      <div class="field-actions confirm-actions">
+        <button class="btn" value="cancel">Cancel</button>
+        <button class="btn btn-primary" value="ok" id="confirm-ok"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="preview" id="preview" aria-labelledby="preview-name">
+    <div class="preview-inner">
+      <div class="preview-head">
+        <div class="preview-title">
+          <h2 id="preview-name"></h2>
+          <p id="preview-meta"></p>
+        </div>
+        <button class="icon-btn" type="button" id="preview-close" aria-label="Close preview (Esc)" title="Close (Esc)"><svg><use href="#i-close"/></svg></button>
+      </div>
+      <div class="preview-stage">
+        <button class="preview-nav" type="button" id="preview-prev" aria-label="Previous (←)" title="Previous (←)"><svg><use href="#i-prev"/></svg></button>
+        <div class="preview-frame"><img id="preview-img" alt=""></div>
+        <button class="preview-nav" type="button" id="preview-next" aria-label="Next (→)" title="Next (→)"><svg><use href="#i-next"/></svg></button>
+      </div>
+      <div class="preview-actions">
+        <button class="btn btn-primary" type="button" id="preview-primary"></button>
+        <button class="btn" type="button" id="preview-fav" aria-pressed="false"><svg aria-hidden="true"><use href="#i-star"/></svg><span>Favorite</span></button>
+        <span class="preview-keys" aria-hidden="true">← → to browse, Enter to place, F to favorite</span>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="sheet" id="store" aria-labelledby="store-title">
+    <div class="sheet-inner">
+      <div class="sheet-head">
+        <h2 id="store-title">Account &amp; downloads</h2>
+        <button class="icon-btn" type="button" id="store-close" aria-label="Close"><svg><use href="#i-close"/></svg></button>
+      </div>
+
+      <section class="field" id="store-unconfigured" hidden>
+        <p class="hint">Add your store’s download address in Settings to sign in and download your packs here.</p>
+      </section>
+
+      <form class="field" id="signin-email" hidden novalidate>
+        <h3>Sign in to download and update your packs</h3>
+        <p class="hint">Use the email you bought with. The store emails you a 6-digit code.</p>
+        <label class="field-label" for="store-email">Email</label>
+        <input class="text-input" id="store-email" type="email" autocomplete="email" spellcheck="false" required>
+        <p class="form-error" id="signin-error" role="alert" hidden></p>
+        <div class="field-actions">
+          <button class="btn btn-primary" type="submit" id="send-code">Send my code</button>
+          <button class="btn btn-link" type="button" id="use-order">Use order number instead</button>
+        </div>
+      </form>
+
+      <form class="field" id="signin-code" hidden novalidate>
+        <h3>Check your inbox</h3>
+        <p class="hint" id="code-hint"></p>
+        <label class="field-label" for="store-code">6-digit code</label>
+        <input class="text-input code-input" id="store-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+        <p class="form-error" id="code-error" role="alert" hidden></p>
+        <div class="field-actions">
+          <button class="btn btn-primary" type="submit" id="verify-code">Sign in</button>
+          <button class="btn btn-link" type="button" id="resend-code">Send a new code</button>
+          <button class="btn btn-link" type="button" id="change-email">Use a different email</button>
+        </div>
+      </form>
+
+      <form class="field" id="signin-order" hidden novalidate>
+        <h3>Sign in with your order number</h3>
+        <label class="field-label" for="order-email">Email</label>
+        <input class="text-input" id="order-email" type="email" autocomplete="email" spellcheck="false" required>
+        <label class="field-label spaced" for="order-number">Order number</label>
+        <input class="text-input" id="order-number" inputmode="numeric" autocomplete="off" placeholder="For example 1001" required>
+        <p class="form-error" id="order-error" role="alert" hidden></p>
+        <div class="field-actions">
+          <button class="btn btn-primary" type="submit">Sign in</button>
+          <button class="btn btn-link" type="button" id="use-email">Use an email code instead</button>
+        </div>
+      </form>
+
+      <div id="store-account" hidden>
+        <section class="field account-row">
+          <div>
+            <p class="account-email" id="account-email"></p>
+            <p class="hint" id="account-status"></p>
+          </div>
+          <button class="btn btn-small" type="button" id="sign-out">Sign out</button>
+        </section>
+        <section class="field">
+          <label class="switch">
+            <input type="checkbox" id="auto-update">
+            <span class="switch-track" aria-hidden="true"></span>
+            <span>Keep packs up to date automatically</span>
+          </label>
+          <p class="hint">Checks the store when Pack Panel opens and every few hours, then downloads new packs and updates one at a time. Pack Panel needs to be running (it keeps working with the panel hidden).</p>
+          <label class="switch">
+            <input type="checkbox" id="auto-activate">
+            <span class="switch-track" aria-hidden="true"></span>
+            <span>Add downloaded brushes and layer styles to PhotoCraft</span>
+          </label>
+          <div class="field-actions">
+            <button class="btn btn-primary" type="button" id="get-all">Download all</button>
+            <button class="btn" type="button" id="activate-all">Add brushes &amp; styles to PhotoCraft</button>
+            <button class="btn" type="button" id="check-now">Check for updates</button>
+          </div>
+        </section>
+        <ul class="store-list" id="store-list" aria-label="Your packs in the store"></ul>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="sheet" id="settings" aria-labelledby="settings-title">
+    <form method="dialog" class="sheet-inner">
+      <div class="sheet-head">
+        <h2 id="settings-title">Settings</h2>
+        <button class="icon-btn" value="close" aria-label="Close settings"><svg><use href="#i-close"/></svg></button>
+      </div>
+
+      <section class="field">
+        <h3>Packs folder</h3>
+        <p class="path" id="root-path">Not chosen yet</p>
+        <div class="field-actions">
+          <button class="btn" type="button" id="choose-folder"><svg aria-hidden="true"><use href="#i-folder"/></svg>Change folder…</button>
+          <button class="btn" type="button" id="add-pack-settings">Add pack (.zip)…</button>
+        </div>
+        <p class="hint">Every subfolder with images, PSDs, brushes or styles shows up as a pack. PSD and PSB files appear under Templates.</p>
+      </section>
+
+      <section class="field">
+        <h3>Placing</h3>
+        <label class="switch">
+          <input type="checkbox" id="fit-toggle">
+          <span class="switch-track" aria-hidden="true"></span>
+          <span>Scale large images down to fit the canvas</span>
+        </label>
+        <p class="hint">Matches Photoshop’s “Resize Image During Place”. Images land as smart objects, centred, just above the selected layer, in one History step.</p>
+      </section>
+
+      <section class="field">
+        <label class="field-label" for="inspo-url">Inspo page</label>
+        <input class="text-input" id="inspo-url" type="url" inputmode="url" placeholder="https://" autocomplete="off" spellcheck="false">
+        <p class="hint">The page the Inspo tab shows. Leave empty to hide it.</p>
+      </section>
+
+      <section class="field">
+        <label class="field-label" for="store-url">Store download address</label>
+        <input class="text-input" id="store-url" type="url" inputmode="url" placeholder="https://" autocomplete="off" spellcheck="false">
+        <p class="hint">The shop portal you sign in to for downloads. Leave empty if you only use local files.</p>
+      </section>
+
+      <section class="field">
+        <h3>PhotoCraft link</h3>
+        <p class="hint">The panel talks to PhotoCraft over a private local connection with a key only this Mac knows. If placing stops working, or you changed the packs folder, reconnect. PhotoCraft asks you to save open work before it restarts.</p>
+        <button class="btn" type="button" id="relaunch">Reconnect PhotoCraft</button>
+      </section>
+
+      <p class="version" id="version"></p>
+    </form>
+  </dialog>
+</body>
+</html>
