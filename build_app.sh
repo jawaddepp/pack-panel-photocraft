@@ -33,8 +33,8 @@ cat > "$APP/Contents/Info.plist" <<'PL'
   <key>CFBundleName</key><string>Pack Panel</string>
   <key>CFBundleDisplayName</key><string>Pack Panel</string>
   <key>CFBundleIdentifier</key><string>local.packpanel</string>
-  <key>CFBundleVersion</key><string>1.6.1</string>
-  <key>CFBundleShortVersionString</key><string>1.6.1</string>
+  <key>CFBundleVersion</key><string>1.6.2</string>
+  <key>CFBundleShortVersionString</key><string>1.6.2</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleExecutable</key><string>PackPanel</string>
   <key>CFBundleIconFile</key><string>PackPanel</string>

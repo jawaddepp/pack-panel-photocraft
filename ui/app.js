@@ -1032,7 +1032,9 @@ function renderShopBar() {
     ui.dlBar.hidden = false;
   } else if (sum.pausedUntil && (sum.queue || []).length) {
     const at = new Date(sum.pausedUntil * 1000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-    ui.dlText.textContent = `Store download limit reached. ${sum.queue.length} waiting, next try around ${at}.`;
+    ui.dlText.replaceChildren(
+      `Store download limit reached. ${sum.queue.length} waiting, next try around ${at}. Have the packs on another Mac? Copy the folder here and `,
+      el("button", { class: "link-btn is-inline", type: "button", onclick: chooseFolder }, "choose it"), ".");
     ui.dlFill.style.width = "0%";
     ui.dlBar.hidden = false;
   } else {

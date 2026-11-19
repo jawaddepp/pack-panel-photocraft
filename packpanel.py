@@ -31,7 +31,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 APP_NAME = "Pack Panel"
-VERSION = "1.6.1"
+VERSION = "1.6.2"
 HERE = Path(__file__).resolve().parent
 UI_DIR = HERE / "ui"
 
@@ -1070,6 +1070,17 @@ def seed_installed(items: list[dict]) -> None:
         mutate_config(fn)
 
 
+def local_status(it: dict) -> str | None:
+    """'installed' / 'update' from what's in the packs folder, ignoring the download queue."""
+    inst = (store_cfg().get("installed") or {}).get(it["id"])
+    root = assets_root()
+    if inst and root is not None and (root / inst.get("path", "")).exists():
+        if (it.get("updated") or 0) > (inst.get("updated") or 0) or (it.get("bytes") and inst.get("bytes") and it["bytes"] != inst["bytes"]):
+            return "update"
+        return "installed"
+    return None
+
+
 def item_status(it: dict) -> str:
     rt = STORE_RUNTIME
     cur = rt["current"]
@@ -1096,6 +1107,20 @@ def ensure_packs_folder() -> Path:
     DEFAULT_PACKS_DIR.mkdir(parents=True, exist_ok=True)
     update_config(assetsRoot=str(DEFAULT_PACKS_DIR.resolve()))
     return DEFAULT_PACKS_DIR
+
+
+def resync_folder() -> int:
+    """After the packs folder changes: count what's already there and drop it from the download queue."""
+    items = STORE_RUNTIME["listing"] or []
+    if not items:
+        return 0
+    seed_installed(items)
+    with _store_lock:
+        before = len(STORE_RUNTIME["queue"])
+        by_id = {x["id"]: x for x in items}
+        STORE_RUNTIME["queue"] = [i for i in STORE_RUNTIME["queue"]
+                                  if not (i in by_id and local_status(by_id[i]) == "installed")]
+        return before - len(STORE_RUNTIME["queue"])
 
 
 def store_check(auto: bool = True) -> list[dict]:
@@ -1208,6 +1233,9 @@ def store_worker() -> None:
                 item_id = rt["queue"].pop(0)
                 it = next((x for x in (rt["listing"] or []) if x["id"] == item_id), None)
                 if it is None:
+                    continue
+                seed_installed([it])
+                if local_status(it) == "installed":  # already there (copied in, or chosen folder has it)
                     continue
                 rt["current"] = {"id": it["id"], "name": it["name"], "done": 0, "total": it["bytes"] or 0}
             try:
@@ -1446,6 +1474,7 @@ class Handler(BaseHTTPRequestHandler):
         if url.path == "/api/state":
             return self._json(200, self._state())
         if url.path == "/api/library":
+            resync_folder()
             return self._json(200, annotate_library(scan_library()))
         if url.path == "/thumb":
             try:
@@ -1547,6 +1576,8 @@ class Handler(BaseHTTPRequestHandler):
                 if url != (CONFIG.get("storeUrl") or ""):
                     STORE_RUNTIME["listing"] = None
             update_config(**changes)
+            if "assetsRoot" in changes:
+                resync_folder()
             return self._state()
         if path == "/api/add-pack":
             added = [add_pack_zip(z) for z in choose_zips()]
@@ -1560,6 +1591,7 @@ class Handler(BaseHTTPRequestHandler):
             chosen = choose_folder()
             if chosen:
                 update_config(assetsRoot=str(Path(chosen).resolve()))
+                resync_folder()
             return self._state()
         if path == "/api/favorite":
             rel = str(body.get("rel", ""))

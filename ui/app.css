@@ -659,3 +659,5 @@ main.is-inspo { padding-left: 0; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   .cards { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
 }
+.link-btn.is-inline { color: var(--tape); text-decoration: underline; font-weight: 600; }
+.progress-text:has(.link-btn) { white-space: normal; }
